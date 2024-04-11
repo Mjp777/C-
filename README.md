@@ -1,2 +1,2 @@
-# C-
+# C++
 Information about c++
