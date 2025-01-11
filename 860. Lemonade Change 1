@@ -1,0 +1,36 @@
+class Solution {
+public:
+    // Method to determine if we can provide every customer with correct change.
+    bool lemonadeChange(vector<int>& bills) {
+        // Initialize counters for $5 and $10 bills.
+        int fiveDollarBills = 0, tenDollarBills = 0;
+      
+        // Iterate over each bill in the vector 'bills'.
+        for (int bill : bills) {
+            if (bill == 5) {
+                // If the bill is $5, no change is needed, simply increment $5 bill counter.
+                ++fiveDollarBills;
+            } else if (bill == 10) {
+                // If the bill is $10, give one $5 bill as change and increment $10 bill counter.
+                ++tenDollarBills;
+                --fiveDollarBills; // Giving change of one $5 bill.
+            } else {
+                // For a $20 bill, prefer to give one $10 and one $5 bill as change if possible.
+                if (tenDollarBills > 0) {
+                    --tenDollarBills;
+                    --fiveDollarBills; // Giving change of one $10 and one $5 bill.
+                } else {
+                    // If no $10 bills are available, give three $5 bills as change.
+                    fiveDollarBills -= 3;
+                }
+            }
+          
+            // If at any point we do not have enough $5 bills to give change, return false.
+            if (fiveDollarBills < 0) {
+                return false;
+            }
+        }
+        // If we were able to provide change for all customers, return true.
+        return true;
+    }
+};
