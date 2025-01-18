@@ -1,47 +1,26 @@
 class Solution {
- public:
-  string nearestPalindromic(string n) {
-    const auto& [prevPalindrome, nextPalindrome] = getPalindromes(n);
-    return abs(prevPalindrome - stol(n)) <= abs(nextPalindrome - stol(n))
-               ? to_string(prevPalindrome)
-               : to_string(nextPalindrome);
-  }
-
- private:
-  // Returns the two closest palindromes to the given number.
-  pair<long, long> getPalindromes(const string& s) {
-    const long num = stol(s);
-    const int n = s.length();
-    pair<long, long> palindromes;
-    const string half = s.substr(0, (n + 1) / 2);
-    const string reversedHalf = reversed(half.substr(0, n / 2));
-    const long candidate = stol(half + reversedHalf);
-
-    if (candidate < num)
-      palindromes.first = candidate;
-    else {
-      const string prevHalf = to_string(stol(half) - 1);
-      const string reversedPrevHalf = reversed(prevHalf.substr(0, n / 2));
-      if (n % 2 == 0 && stol(prevHalf) == 0)
-        palindromes.first = 9;
-      else if (n % 2 == 0 && prevHalf == "9")
-        palindromes.first = stol(prevHalf + '9' + reversedPrevHalf);
-      else
-        palindromes.first = stol(prevHalf + reversedPrevHalf);
+public:
+    string nearestPalindromic(string n) {
+        long x = stol(n);
+        long ans = -1;
+        for (long t : get(n))
+            if (ans == -1 || abs(t - x) < abs(ans - x) || (abs(t - x) == abs(ans - x) && t < ans))
+                ans = t;
+        return to_string(ans);
     }
 
-    if (candidate > num)
-      palindromes.second = candidate;
-    else {
-      const string& nextHalf = to_string(stol(half) + 1);
-      const string& reversedNextHalf = reversed(nextHalf.substr(0, n / 2));
-      palindromes.second = stol(nextHalf + reversedNextHalf);
+    unordered_set<long> get(string& n) {
+        int l = n.size();
+        unordered_set<long> res;
+        res.insert((long) pow(10, l - 1) - 1);
+        res.insert((long) pow(10, l) + 1);
+        long left = stol(n.substr(0, (l + 1) / 2));
+        for (long i = left - 1; i <= left + 1; ++i) {
+            string prefix = to_string(i);
+            string t = prefix + string(prefix.rbegin() + (l & 1), prefix.rend());
+            res.insert(stol(t));
+        }
+        res.erase(stol(n));
+        return res;
     }
-
-    return palindromes;
-  }
-
-  string reversed(const string& s) {
-    return {s.rbegin(), s.rend()};
-  }
 };
