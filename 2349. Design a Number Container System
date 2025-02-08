@@ -1,0 +1,48 @@
+#include <map>
+#include <set>
+
+class NumberContainers {
+public:
+    // Maps each index to the number it contains.
+    std::map<int, int> indexToNumberMap;
+
+    // Maps each number to a set of indices that contain this number.
+    std::map<int, std::set<int>> numberToIndicesMap;
+
+    // Default constructor.
+    NumberContainers() {
+    }
+
+    // Changes the number at the given index.
+    void change(int index, int number) {
+        // Check if the index is already in the map.
+        auto it = indexToNumberMap.find(index);
+        if (it != indexToNumberMap.end()) {
+            // If the index is already there, remove the index from the set corresponding
+            // to its current number, as it's about to be reassigned.
+            numberToIndicesMap[it->second].erase(index);
+            // Update the index to the new number.
+            it->second = number;
+        } else {
+            // If the index is new, just add it to the map.
+            indexToNumberMap[index] = number;
+        }
+        // Insert the index to the set corresponding to the new number.
+        numberToIndicesMap[number].insert(index);
+    }
+
+    // Finds the smallest index that contains the given number. Returns -1 if such an index cannot be found.
+    int find(int number) {
+        // Attempt to find the set of indices for the given number.
+        auto it = numberToIndicesMap.find(number);
+        // If the number is not found or the set is empty, return -1.
+        return (it == numberToIndicesMap.end() || it->second.empty()) ? -1 : *it->second.begin();
+    }
+};
+
+/**
+ * The NumberContainers object will be instantiated and called like this:
+ * NumberContainers* obj = new NumberContainers();
+ * obj->change(index, number);
+ * int param_2 = obj->find(number);
+ */
