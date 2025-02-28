@@ -1,0 +1,59 @@
+#include <vector>
+#include <algorithm>
+#include <string>
+
+class Solution {
+public:
+    // Method calculates the shortest common supersequence of two strings
+    std::string shortestCommonSupersequence(std::string str1, std::string str2) {
+        int m = str1.size(); // Length of str1
+        int n = str2.size(); // Length of str2
+      
+        // dp table with dimensions m+1 by n+1, initialized to 0
+        std::vector<std::vector<int>> dp(m + 1, std::vector<int>(n + 1, 0));
+    
+        // Fill the dp table
+        for (int i = 1; i <= m; ++i) {
+            for (int j = 1; j <= n; ++j) {
+                if (str1[i - 1] == str2[j - 1]) {
+                    // Characters match, increment the length of common subsequence
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                } else {
+                    // Characters do not match, take the maximum from either the top or left cell
+                    dp[i][j] = std::max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+      
+        // Reconstruct the shortest common supersequence from the dp table
+        std::string sequence;
+        int i = m, j = n;
+        while (i > 0 || j > 0) {
+            if (i == 0) {
+                // If we have reached the beginning of str1, append remaining str2
+                sequence += str2[--j];
+            } else if (j == 0) {
+                // If we have reached the beginning of str2, append remaining str1
+                sequence += str1[--i];
+            } else {
+                // Decide which character to append from either str1 or str2
+                if (dp[i][j] == dp[i - 1][j]) {
+                    // Coming from top, append str1's character
+                    sequence += str1[--i];
+                } else if (dp[i][j] == dp[i][j - 1]) {
+                    // Coming from left, append str2's character
+                    sequence += str2[--j];
+                } else {
+                    // When characters match, append one of them and move diagonally
+                    sequence += str1[--i];
+                    --j;
+                }
+            }
+        }
+      
+        // Since the construction was from back to front, reverse the string
+        std::reverse(sequence.begin(), sequence.end());
+      
+        return sequence;
+    }
+};
